@@ -1,8 +1,8 @@
 # xo-wrapper
 
-A shared XO configuration for JavaScript, TypeScript, React, and testing (Jest + Vitest) projects.
+> A shared XO configuration for JavaScript, TypeScript, React, and testing (Jest + Vitest) projects.
 
-This package allows teams to standardize linting rules across multiple projects, with no additional installs required. It bundles XO and all required ESLint plugins.
+This package allows teams to standardize linting rules across multiple projects, with no additional installs required. It bundles XO, all required ESLint plugins, and provides a CLI for seamless usage.
 
 ## Quick Start
 
@@ -17,7 +17,8 @@ npm install --save-dev xo-wrapper
 ```json
 {
   "scripts": {
-    "lint": "xo-lint"
+    "lint": "xo-lint",
+    "lint:fix": "xo-lint --fix"
   }
 }
 ```
@@ -36,11 +37,11 @@ It will automatically lint JS, TS, React, and test files.
 - Includes support for Vitest and Jest test files.
 - Integrates Prettier with opinionated formatting.
 - Comes with custom overrides for common rules:
-  - simple-import-sort
-  - unicorn rules
-  - @typescript-eslint rules
-  - react rules
-  - prettier formatting
+  - `simple-import-sort`
+  - `unicorn rules`
+  - `@typescript-eslint rules`
+  - `React rules`
+  - `Prettier formatting`
 - Self-contained — consumers do not need to install XO or ESLint plugins separately.
 - Fully customizable — override any rules in the consuming project.
 
@@ -89,9 +90,29 @@ The `xo-lint` command will automatically respect this override.
 - eslint-plugin-vitest
 - eslint-plugin-jest
 
+## 💻 VSCode Integration
+
+To format on save, add a .vscode/settings.json in your project:
+
+```json
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "editor.formatOnSave": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}
+```
+
 ## Notes
 
 - Your consuming project does not need to install XO or any ESLint plugins manually.
 - Test file rules will only apply to files matching `*.test.*`, `*.spec.*`, or files in a `tests` directory.
 - All custom rules are overrideable — just extend the config in your project.
 - The package auto-detects TypeScript and React projects.
+- Pre-commit hooks with `husky` + `lint-staged` are optional for automation.
