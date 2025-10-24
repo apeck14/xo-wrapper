@@ -1,6 +1,6 @@
 {
   "name": "xo-wrapper",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Shared XO config for JS, TS, and React projects.",
   "type": "module",
   "main": "lib/xo.config.js",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
+    "chalk": "^5.6.2",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jest": "^29.0.1",
