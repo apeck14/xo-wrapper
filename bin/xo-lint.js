@@ -23,23 +23,36 @@ const xo = new XO({
   ...config,
   cwd: process.cwd(),
   fix,
-  formatter: "stylish", // nicer default output
   extensions: [".js", ".ts", ".jsx", ".tsx"],
-  ignore: ["node_modules/**", "dist/**", "build/**"], // standard ignores
+  ignore: ["node_modules/**", "dist/**", "build/**"],
+  formatter: "stylish",
 });
 
-// Run linting
+// Async IIFE to run linting
 (async () => {
   try {
     const results = await xo.lintFiles(filesToLint);
 
-    // Print formatted results to console
-    const formatted = xo.getFormatter().format(results);
+    // XO v0.59+ formatter returns a function
+    const formatted = xo.getFormatter()(results);
     if (formatted) console.log(formatted);
 
-    // Exit with error code if there were lint errors
-    const hasErrors = results.some((r) => r.errorCount > 0);
-    process.exit(hasErrors ? 1 : 0);
+    const errorCount = results.reduce((acc, r) => acc + r.errorCount, 0);
+    const warningCount = results.reduce((acc, r) => acc + r.warningCount, 0);
+
+    if (errorCount === 0 && warningCount === 0) {
+      console.log(chalk.green.bold("✅ No lint errors or warnings found!"));
+    } else {
+      if (errorCount > 0) {
+        console.log(chalk.red.bold(`❌ Total Errors: ${errorCount}`));
+      }
+      if (warningCount > 0) {
+        console.log(chalk.yellow.bold(`⚠️  Total Warnings: ${warningCount}`));
+      }
+    }
+
+    // Exit with error code if any lint errors (CI-friendly)
+    process.exit(errorCount > 0 ? 1 : 0);
   } catch (err) {
     console.error(chalk.red.bold("❌ XO Linting failed:\n"), err);
     process.exit(1);
