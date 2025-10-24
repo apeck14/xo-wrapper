@@ -5,6 +5,9 @@ import process from 'process'
 import config from '../lib/xo.config.js'
 import chalk from 'chalk'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
 const args = process.argv.slice(2)
 const fix = args.includes('--fix')
 const patterns = args.filter((arg) => arg !== '--fix')
