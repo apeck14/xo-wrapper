@@ -4,6 +4,8 @@ import XO from 'xo'
 import process from 'process'
 import config from '../lib/xo.config.js'
 import chalk from 'chalk'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
