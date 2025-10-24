@@ -22,9 +22,8 @@ const xo = new XO({
   try {
     const results = await xo.lintFiles(filesToLint);
 
-    // Use static method on XO class
-    const formatter = XO.getFormatter("stylish");
-    const formatted = formatter(results);
+    // XO v0.59+ returns results formatted automatically
+    const formatted = XO.formatResults(results, "stylish");
     if (formatted) console.log(formatted);
 
     const errorCount = results.reduce((acc, r) => acc + r.errorCount, 0);
