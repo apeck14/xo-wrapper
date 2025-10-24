@@ -15,7 +15,8 @@ const xo = new XO({
   cwd: process.cwd(),
   fix,
   extensions: ['.js', '.ts', '.jsx', '.tsx'],
-  ignore: ['node_modules/**', 'dist/**', 'build/**']
+  ignore: ['node_modules/**', 'dist/**', 'build/**'],
+  resolvePluginsRelativeTo: __dirname
 })
 
 ;(async () => {
