@@ -23,7 +23,7 @@ const xo = new XO({
     const results = await xo.lintFiles(filesToLint);
 
     const formatter = await xo.getFormatter("stylish");
-    const formatted = formatter.format(results);
+    const formatted = formatter.format(results.results);
 
     if (formatted) console.log(formatted);
 
