@@ -4,23 +4,23 @@ Zero-config ESLint/XO linting for JavaScript, TypeScript, and React projects. Al
 
 ## Features
 
-- **Zero configuration required** - Works out of the box
+- **Zero configuration** - Works out of the box
 - **Built on XO defaults** - Opinionated, battle-tested rules
 - **Full TypeScript support** - Automatic detection and configuration
-- **React-ready** - JSX/TSX support with a11y checks
+- **React + a11y ready** - JSX/TSX with accessibility checks
 - **Test framework aware** - Jest and Vitest support
-- **All dependencies bundled** - No peer dependency management needed
+- **All plugins bundled** - No peer dependency management
 
 ## Installation
-
 ```bash
-npm i -D xo-wrapper
+npm i -D xo-wrapper eslint
 ```
+
+An `eslint.config.js` is automatically created for VSCode integration.
 
 ## Usage
 
-Add to your `package.json`:
-
+Add to `package.json`:
 ```json
 {
   "scripts": {
@@ -31,72 +31,62 @@ Add to your `package.json`:
 ```
 
 Run linting:
-
 ```bash
-npm run lint
-npm run lint:fix
+npm run lint        # Check for issues
+npm run lint:fix    # Auto-fix issues
 ```
 
 ## CLI Options
-
 ```bash
-xo-lint                    # Lint all JS/TS/JSX/TSX files
-xo-lint --fix              # Auto-fix issues
-xo-lint src/**/*.ts        # Lint specific files/patterns
-xo-lint --version          # Show version
+xo-lint                # Lint all JS/TS/JSX/TSX files
+xo-lint --fix          # Auto-fix issues
+xo-lint src/**/*.ts    # Lint specific patterns
+xo-lint --version      # Show version
 ```
 
 ## What's Included
 
-**Plugins:**
+**Plugins:** import, jsx-a11y, react, simple-import-sort, unicorn, jest, vitest, @typescript-eslint
 
-- `eslint-plugin-import` - Import/export validation
-- `eslint-plugin-jsx-a11y` - Accessibility checks for JSX
-- `eslint-plugin-react` - React best practices
-- `eslint-plugin-simple-import-sort` - Automatic import sorting
-- `eslint-plugin-unicorn` - Additional quality rules
-- `eslint-plugin-jest` - Jest testing conventions
-- `eslint-plugin-vitest` - Vitest testing conventions
-- `@typescript-eslint` - Full TypeScript support
+**Also includes:** Prettier integration and all necessary parsers
 
-**Also includes:** ESLint, Prettier integration, and all necessary parsers.
+## VSCode Setup
 
-## Project Detection
-
-xo-wrapper automatically configures itself based on your project:
-
-- **TypeScript** - Detected via `tsconfig.json`
-- **React** - JSX/TSX files automatically use React rules
-- **Tests** - `*.test.*`, `*.spec.*`, and `tests/**` files use test-specific rules
-
-## Extending Configuration
-
-Need custom rules? Create `xo.config.js` in your project root:
-
-```javascript
-import baseConfig from 'xo-wrapper'
-
-export default {
-  ...baseConfig,
-  rules: {
-    ...baseConfig.rules,
-    // Your overrides
-    'no-console': 'warn'
-  }
+1. Install [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+2. Add to `.vscode/settings.json`:
+```json
+{
+  "eslint.enable": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.formatOnSave": false
 }
 ```
 
-Then use XO directly:
+**Troubleshooting:** If linting doesn't work, reload VSCode (`Cmd/Ctrl + Shift + P` → "Reload Window")
 
-```json
-{
-  "scripts": {
-    "lint": "xo"
+## Custom Rules
+
+Edit the auto-generated `eslint.config.js`:
+```javascript
+import xoWrapperConfig from 'xo-wrapper'
+
+export default {
+  ...xoWrapperConfig,
+  rules: {
+    ...xoWrapperConfig.rules,
+    'no-console': 'warn'  // Your overrides
   }
 }
 ```
 
 ## Requirements
 
+**Runtime:**
 - Node.js >= 18
-- Works with both ESM and CommonJS projects
+- ESLint >= 8.57.0 (installed automatically)
+
+**Editor (optional):**
+- VSCode ESLint extension for auto-fix on save

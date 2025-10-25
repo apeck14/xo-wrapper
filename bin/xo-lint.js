@@ -10,7 +10,21 @@ import config from '../lib/xo.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const packageRoot = join(__dirname, '..') // Package root where node_modules lives
+const packageRoot = join(__dirname, '..')
+
+// Detect ESLint version
+let eslintVersion = 9
+try {
+  const eslintPkgPath = join(process.cwd(), 'node_modules', 'eslint', 'package.json')
+  const eslintPkg = JSON.parse(readFileSync(eslintPkgPath, 'utf8'))
+  eslintVersion = parseInt(eslintPkg.version.split('.')[0], 10)
+} catch {
+  // Default to 9
+}
+
+if (eslintVersion < 9) {
+  console.log(chalk.yellow('⚠️  ESLint 8 detected. For best experience, upgrade to ESLint 9+'))
+}
 
 const args = process.argv.slice(2)
 
@@ -31,7 +45,7 @@ const xo = new XO({
   fix,
   extensions: ['.js', '.ts', '.jsx', '.tsx'],
   ignore: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**', '.next/**'],
-  resolvePluginsRelativeTo: packageRoot, // Critical: point to package root
+  resolvePluginsRelativeTo: packageRoot,
   cache: true,
   cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper')
 })
@@ -55,14 +69,14 @@ const xo = new XO({
     process.exit(errorCount > 0 ? 1 : 0)
   } catch (err) {
     console.error(chalk.red.bold('❌ XO Linting failed:'))
-
+    
     if (err.message.includes('Cannot find module') || err.message.includes('Failed to load plugin')) {
       console.error(chalk.yellow('\nHint: This might be a plugin resolution issue.'))
       console.error(chalk.yellow('Try removing node_modules and package-lock.json, then reinstalling.'))
     }
-
+    
     console.error('\n' + err.message)
-
+    
     process.exit(1)
   }
 })()
