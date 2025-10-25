@@ -2,10 +2,10 @@
 
 import XO from 'xo'
 import process from 'process'
-import config from '../lib/xo.config.js'
 import chalk from 'chalk'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
+import config from '../lib/xo.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -26,15 +26,12 @@ const xo = new XO({
 
 ;(async () => {
   try {
-    const results = await xo.lintFiles(filesToLint)
+    const { results, errorCount, warningCount } = await xo.lintFiles(filesToLint)
 
     const formatter = await xo.getFormatter('stylish')
-    const formatted = formatter.format(results.results)
+    const formatted = formatter.format(results)
 
     if (formatted) console.log(formatted)
-
-    const errorCount = results.reduce((acc, r) => acc + r.errorCount, 0)
-    const warningCount = results.reduce((acc, r) => acc + r.warningCount, 0)
 
     if (errorCount === 0 && warningCount === 0) {
       console.log(chalk.green.bold('✅ No lint errors or warnings found!'))
