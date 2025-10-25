@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
-import XO from 'xo'
-import process from 'process'
 import chalk from 'chalk'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
 import { readFileSync } from 'fs'
+import { dirname, join } from 'path'
+import process from 'process'
+import { fileURLToPath } from 'url'
+import XO from 'xo'
+
 import config from '../lib/xo.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -69,14 +70,14 @@ const xo = new XO({
     process.exit(errorCount > 0 ? 1 : 0)
   } catch (err) {
     console.error(chalk.red.bold('❌ XO Linting failed:'))
-    
+
     if (err.message.includes('Cannot find module') || err.message.includes('Failed to load plugin')) {
       console.error(chalk.yellow('\nHint: This might be a plugin resolution issue.'))
       console.error(chalk.yellow('Try removing node_modules and package-lock.json, then reinstalling.'))
     }
-    
+
     console.error('\n' + err.message)
-    
+
     process.exit(1)
   }
 })()

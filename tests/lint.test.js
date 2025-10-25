@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
 import { fileURLToPath } from 'url'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import XO from 'xo'
 
 const __filename = fileURLToPath(import.meta.url)

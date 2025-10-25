@@ -1,5 +1,6 @@
+import { describe, expect, it } from 'vitest'
+
 import config from '../lib/xo.config.js'
-import { describe, it, expect } from 'vitest'
 
 describe('XO config', () => {
   it('should export an object', () => {

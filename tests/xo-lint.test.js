@@ -1,6 +1,6 @@
 import { exec } from 'child_process'
-import { describe, it, expect } from 'vitest'
 import path from 'path'
+import { describe, expect, it } from 'vitest'
 
 describe('xo-lint CLI', () => {
   it('should run without crashing on a sample file', (done) => {
