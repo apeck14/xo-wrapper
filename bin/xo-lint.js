@@ -4,15 +4,25 @@ import XO from 'xo'
 import process from 'process'
 import chalk from 'chalk'
 import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { dirname, join } from 'path'
+import { readFileSync } from 'fs'
 import config from '../lib/xo.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+const packageRoot = join(__dirname, '..') // Package root where node_modules lives
 
 const args = process.argv.slice(2)
+
+// Handle --version flag
+if (args.includes('--version') || args.includes('-v')) {
+  const pkg = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'))
+  console.log(pkg.version)
+  process.exit(0)
+}
+
 const fix = args.includes('--fix')
-const patterns = args.filter((arg) => arg !== '--fix')
+const patterns = args.filter((arg) => !arg.startsWith('--'))
 const filesToLint = patterns.length > 0 ? patterns : ['**/*.{js,ts,jsx,tsx}']
 
 const xo = new XO({
@@ -20,8 +30,10 @@ const xo = new XO({
   cwd: process.cwd(),
   fix,
   extensions: ['.js', '.ts', '.jsx', '.tsx'],
-  ignore: ['node_modules/**', 'dist/**', 'build/**'],
-  resolvePluginsRelativeTo: __dirname
+  ignore: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**', '.next/**'],
+  resolvePluginsRelativeTo: packageRoot, // Critical: point to package root
+  cache: true,
+  cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper')
 })
 
 ;(async () => {
@@ -42,7 +54,15 @@ const xo = new XO({
 
     process.exit(errorCount > 0 ? 1 : 0)
   } catch (err) {
-    console.error(chalk.red.bold('❌ XO Linting failed:\n'), err)
+    console.error(chalk.red.bold('❌ XO Linting failed:'))
+
+    if (err.message.includes('Cannot find module') || err.message.includes('Failed to load plugin')) {
+      console.error(chalk.yellow('\nHint: This might be a plugin resolution issue.'))
+      console.error(chalk.yellow('Try removing node_modules and package-lock.json, then reinstalling.'))
+    }
+
+    console.error('\n' + err.message)
+
     process.exit(1)
   }
 })()

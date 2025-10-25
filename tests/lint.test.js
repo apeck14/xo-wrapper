@@ -36,7 +36,6 @@ describe('XO Lint', () => {
     // Assert that XO ran and returned results
     expect(Array.isArray(results.results)).toBe(true)
 
-    // Optionally check that errors exist
     const errorCount = results.results.reduce((acc, r) => acc + r.errorCount, 0)
     expect(errorCount).toBeGreaterThan(0)
   })

@@ -1,18 +1,25 @@
 # xo-wrapper
 
-> A shared XO configuration for JavaScript, TypeScript, React, and testing (Jest + Vitest) projects.
+Zero-config ESLint/XO linting for JavaScript, TypeScript, and React projects. All plugins bundled—just install and run.
 
-This package allows teams to standardize linting rules across multiple projects, with no additional installs required. It bundles XO, all required ESLint plugins, and provides a CLI for seamless usage.
+## Features
 
-## Quick Start
+- **Zero configuration required** - Works out of the box
+- **Built on XO defaults** - Opinionated, battle-tested rules
+- **Full TypeScript support** - Automatic detection and configuration
+- **React-ready** - JSX/TSX support with a11y checks
+- **Test framework aware** - Jest and Vitest support
+- **All dependencies bundled** - No peer dependency management needed
 
-### 1. Install the package
+## Installation
 
 ```bash
-npm install --save-dev xo-wrapper
+npm i -D xo-wrapper
 ```
 
-### 2. Add a lint script in your package.json
+## Usage
+
+Add to your `package.json`:
 
 ```json
 {
@@ -23,96 +30,73 @@ npm install --save-dev xo-wrapper
 }
 ```
 
-### 3. Run linting
+Run linting:
 
 ```bash
 npm run lint
+npm run lint:fix
 ```
 
-It will automatically lint JS, TS, React, and test files.
+## CLI Options
 
-## Features
+```bash
+xo-lint                    # Lint all JS/TS/JSX/TSX files
+xo-lint --fix              # Auto-fix issues
+xo-lint src/**/*.ts        # Lint specific files/patterns
+xo-lint --version          # Show version
+```
 
-- Works for JavaScript, TypeScript, and React projects.
-- Includes support for Vitest and Jest test files.
-- Integrates Prettier with opinionated formatting.
-- Comes with custom overrides for common rules:
-  - `simple-import-sort`
-  - `unicorn rules`
-  - `@typescript-eslint rules`
-  - `React rules`
-  - `Prettier formatting`
-- Self-contained — consumers do not need to install XO or ESLint plugins separately.
-- Fully customizable — override any rules in the consuming project.
+## What's Included
 
-## Customization
+**Plugins:**
 
-You can override or extend the rules in your consuming project by creating a `xo.config.js`:
+- `eslint-plugin-import` - Import/export validation
+- `eslint-plugin-jsx-a11y` - Accessibility checks for JSX
+- `eslint-plugin-react` - React best practices
+- `eslint-plugin-simple-import-sort` - Automatic import sorting
+- `eslint-plugin-unicorn` - Additional quality rules
+- `eslint-plugin-jest` - Jest testing conventions
+- `eslint-plugin-vitest` - Vitest testing conventions
+- `@typescript-eslint` - Full TypeScript support
 
-```js
-import baseConfig from "xo-wrapper/lib/xo.config.js";
+**Also includes:** ESLint, Prettier integration, and all necessary parsers.
 
-export default [
+## Project Detection
+
+xo-wrapper automatically configures itself based on your project:
+
+- **TypeScript** - Detected via `tsconfig.json`
+- **React** - JSX/TSX files automatically use React rules
+- **Tests** - `*.test.*`, `*.spec.*`, and `tests/**` files use test-specific rules
+
+## Extending Configuration
+
+Need custom rules? Create `xo.config.js` in your project root:
+
+```javascript
+import baseConfig from 'xo-wrapper'
+
+export default {
   ...baseConfig,
-  {
-    rules: {
-      "no-console": "warn",
-      "@typescript-eslint/no-explicit-any": "off",
-    },
-  },
-];
-```
-
-The `xo-lint` command will automatically respect this override.
-
-## Supported Environments
-
-| Environment | Notes                                             |
-| ----------- | ------------------------------------------------- |
-| JavaScript  | `.js`, `.jsx`                                     |
-| TypeScript  | `.ts`, `.tsx`                                     |
-| React       | JSX support included                              |
-| Jest        | `.test.*` / `.spec.*` files, globals auto-enabled |
-| Vitest      | `.test.*` / `.spec.*` files, globals auto-enabled |
-| Prettier    | Automatic integration                             |
-
-## Plugins Included
-
-- xo
-- @typescript-eslint/eslint-plugin
-- @typescript-eslint/parser
-- eslint-plugin-react
-- eslint-plugin-unicorn
-- eslint-plugin-simple-import-sort
-- eslint-plugin-n
-- eslint-plugin-import
-- eslint-plugin-prettier
-- eslint-plugin-vitest
-- eslint-plugin-jest
-
-## 💻 VSCode Integration
-
-To format on save, add a .vscode/settings.json in your project:
-
-```json
-{
-  "editor.codeActionsOnSave": {
-    "source.fixAll": true
-  },
-  "editor.formatOnSave": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ]
+  rules: {
+    ...baseConfig.rules,
+    // Your overrides
+    'no-console': 'warn'
+  }
 }
 ```
 
-## Notes
+Then use XO directly:
 
-- Your consuming project does not need to install XO or any ESLint plugins manually.
-- Test file rules will only apply to files matching `*.test.*`, `*.spec.*`, or files in a `tests` directory.
-- All custom rules are overrideable — just extend the config in your project.
-- The package auto-detects TypeScript and React projects.
-- Pre-commit hooks with `husky` + `lint-staged` are optional for automation.
+```json
+{
+  "scripts": {
+    "lint": "xo"
+  }
+}
+```
+
+## Requirements
+
+- Node.js >= 18
+- Works with both ESM and CommonJS projects
