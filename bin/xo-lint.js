@@ -7,25 +7,11 @@ import process from 'process'
 import { fileURLToPath } from 'url'
 import XO from 'xo'
 
-import config from '../lib/xo.config.js'
+import xoConfig from '../lib/xo.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const packageRoot = join(__dirname, '..')
-
-// Detect ESLint version
-let eslintVersion = 9
-try {
-  const eslintPkgPath = join(process.cwd(), 'node_modules', 'eslint', 'package.json')
-  const eslintPkg = JSON.parse(readFileSync(eslintPkgPath, 'utf8'))
-  eslintVersion = parseInt(eslintPkg.version.split('.')[0], 10)
-} catch {
-  // Default to 9
-}
-
-if (eslintVersion < 9) {
-  console.log(chalk.yellow('⚠️  ESLint 8 detected. For best experience, upgrade to ESLint 9+'))
-}
 
 const args = process.argv.slice(2)
 
@@ -40,16 +26,15 @@ const fix = args.includes('--fix')
 const patterns = args.filter((arg) => !arg.startsWith('--'))
 const filesToLint = patterns.length > 0 ? patterns : ['**/*.{js,ts,jsx,tsx}']
 
-const xo = new XO({
-  ...config,
-  cwd: process.cwd(),
-  fix,
-  extensions: ['.js', '.ts', '.jsx', '.tsx'],
-  ignore: ['node_modules/**', 'dist/**', 'build/**', 'coverage/**', '.next/**'],
-  resolvePluginsRelativeTo: packageRoot,
-  cache: true,
-  cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper')
-})
+const xo = new XO(
+  {
+    cwd: process.cwd(),
+    fix,
+    cache: true,
+    cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper')
+  },
+  xoConfig
+)
 
 ;(async () => {
   try {

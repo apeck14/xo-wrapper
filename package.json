@@ -1,9 +1,9 @@
 {
   "name": "xo-wrapper",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Shared XO config for JS, TS, and React projects.",
   "type": "module",
-  "main": "lib/xo.config.js",
+  "main": "lib/config.js",
   "bin": {
     "xo-lint": "bin/xo-lint.js"
   },
@@ -45,9 +45,10 @@
     "vitest": "^4.0.3"
   },
   "exports": {
-    ".": "./lib/xo.config.js",
-    "./config": "./lib/xo.config.js",
-    "./legacy": "./lib/xo.config.legacy.cjs"
+    ".": "./lib/config.js",
+    "./config": "./lib/config.js",
+    "./xo-config": "./lib/xo.config.js",
+    "./legacy": "./lib/config.legacy.cjs"
   },
   "keywords": [
     "xo",

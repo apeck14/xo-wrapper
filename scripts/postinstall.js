@@ -29,7 +29,7 @@ try {
   const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
   isESM = pkg.type === 'module'
   console.log(chalk.blue(`Package type: ${isESM ? 'ESM' : 'CommonJS'}`))
-} catch (error) {
+} catch {
   console.log(chalk.yellow('Could not detect package type, assuming CommonJS'))
 }
 
@@ -40,7 +40,7 @@ try {
   const eslintPkg = JSON.parse(readFileSync(eslintPkgPath, 'utf8'))
   eslintVersion = parseInt(eslintPkg.version.split('.')[0], 10)
   console.log(chalk.blue(`ESLint version: ${eslintVersion}`))
-} catch (error) {
+} catch {
   console.log(chalk.yellow('Could not detect ESLint version, defaulting to 9'))
 }
 
