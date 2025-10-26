@@ -122,3 +122,21 @@ export function getConsumerRoot() {
 
   return process.cwd()
 }
+
+/**
+ * Checks if we're installing within the xo-wrapper package itself
+ * @returns {boolean} - True if in package repo
+ */
+export function isPackageRepo() {
+  const consumerRoot = getConsumerRoot()
+
+  try {
+    const pkgPath = join(consumerRoot, 'package.json')
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+
+    // Check if this is the xo-wrapper package itself
+    return pkg.name === 'xo-wrapper'
+  } catch {
+    return false
+  }
+}

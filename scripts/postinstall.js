@@ -4,13 +4,26 @@ import chalk from 'chalk'
 import { existsSync } from 'fs'
 import { resolve } from 'path'
 
-import { detectESLintVersion, detectPackageType, getConsumerRoot, loadTemplate, safeWriteFile } from './utils.js'
+import {
+  detectESLintVersion,
+  detectPackageType,
+  getConsumerRoot,
+  isPackageRepo,
+  loadTemplate,
+  safeWriteFile
+} from './utils.js'
 
 // ============================================
 // DETECT CONSUMER ENVIRONMENT
 // ============================================
 
 const consumerRoot = getConsumerRoot()
+
+// Exit early if we're in the package repo itself
+if (isPackageRepo()) {
+  console.error(chalk.blue('ℹ️  Skipping postinstall - running in package repo'))
+  process.exit(0)
+}
 
 console.error(chalk.blue.bold('\n🔧 xo-wrapper setup'))
 console.error(chalk.blue(`📁 Consumer root: ${consumerRoot}\n`))
