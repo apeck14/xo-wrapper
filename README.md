@@ -13,7 +13,7 @@ Zero-config ESLint/XO linting for JavaScript, TypeScript, and React projects. Al
 
 ## Installation
 ```bash
-npm i -D xo-wrapper eslint
+npm i -D xo-wrapper
 ```
 
 An `eslint.config.js` is automatically created for VSCode integration.
@@ -29,6 +29,13 @@ Add to `package.json`:
   }
 }
 ```
+
+The following files will be automatically created:
+- `eslint.config.js` or `eslint.config.mjs` - ESLint configuration
+- `.prettierrc` - Prettier formatting rules
+- `.prettierignore` - Files to exclude from formatting
+
+**Note:** You can customize these files after installation if needed.
 
 Run linting:
 ```bash
@@ -52,7 +59,9 @@ xo-lint --version      # Show version
 
 ## VSCode Setup
 
-1. Install [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+1. Install optional extensions:
+   - [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+   - [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 2. Add to `.vscode/settings.json`:
 ```json
 {
@@ -61,7 +70,8 @@ xo-lint --version      # Show version
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "editor.formatOnSave": false
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
 ```
 
@@ -87,6 +97,8 @@ export default {
 **Runtime:**
 - Node.js >= 18
 - ESLint >= 8.57.0 (installed automatically)
+- Prettier >= 3.0.0 (installed automatically)
 
 **Editor (optional):**
-- VSCode ESLint extension for auto-fix on save
+- VSCode ESLint extension for linting on save
+- VSCode Prettier extension for formatting on save

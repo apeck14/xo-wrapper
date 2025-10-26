@@ -1,6 +1,6 @@
 {
   "name": "xo-wrapper",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Shared XO config for JS, TS, and React projects.",
   "type": "module",
   "main": "lib/xo.config.js",
@@ -24,12 +24,10 @@
     "@typescript-eslint/parser": "^8.46.2",
     "chalk": "^5.6.2",
     "eslint": ">=8.57.0",
-    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jest": "^29.0.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-n": "^17.10.0",
-    "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-simple-import-sort": "^12.0.0",
     "eslint-plugin-unicorn": "^54.0.0",
@@ -50,5 +48,16 @@
     ".": "./lib/xo.config.js",
     "./config": "./lib/xo.config.js",
     "./legacy": "./lib/xo.config.legacy.cjs"
-  }
+  },
+  "keywords": [
+    "xo",
+    "eslint",
+    "lint",
+    "linter",
+    "typescript",
+    "react",
+    "config",
+    "shared-config",
+    "prettier"
+  ]
 }

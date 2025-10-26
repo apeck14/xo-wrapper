@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-// More robust way to get consumer root
+// Get consumer root
 let consumerRoot
 
 if (process.env.INIT_CWD) {
@@ -44,9 +44,10 @@ try {
   console.log(chalk.yellow('Could not detect ESLint version, defaulting to 9'))
 }
 
+// ============================================
+// CREATE ESLINT CONFIG
+// ============================================
 if (eslintVersion >= 9) {
-  // ESLint 9+ flat config
-  // Use .mjs for CommonJS repos, .js for ESM repos
   const configFileName = isESM ? 'eslint.config.js' : 'eslint.config.mjs'
   const configPath = resolve(consumerRoot, configFileName)
 
@@ -57,20 +58,15 @@ export default xoWrapperConfig
 
   try {
     writeFileSync(configPath, configContent, 'utf8')
-    console.log(chalk.green.bold(`✅ Created/updated ${configFileName} at: ${configPath}`))
+    console.log(chalk.green.bold(`✅ Created/updated ${configFileName}`))
 
     if (existsSync(configPath)) {
-      console.log(chalk.green('✓ File verified to exist'))
-    } else {
-      console.log(chalk.red('✗ File was not created!'))
+      console.log(chalk.green('  ✓ File verified'))
     }
   } catch (error) {
-    console.log(chalk.red.bold(`❌ Failed to create config file: ${error.message}`))
-    console.log(chalk.yellow.bold(`\nℹ️  Please create ${configFileName} manually:`))
-    console.log(chalk.gray(configContent))
+    console.log(chalk.red.bold(`❌ Failed to create ${configFileName}: ${error.message}`))
   }
 } else {
-  // ESLint 8 legacy config
   const configPath = resolve(consumerRoot, '.eslintrc.cjs')
   const configContent = `module.exports = {
   extends: ['xo-wrapper/legacy']
@@ -79,16 +75,94 @@ export default xoWrapperConfig
 
   try {
     writeFileSync(configPath, configContent, 'utf8')
-    console.log(chalk.green.bold(`✅ Created/updated .eslintrc.cjs at: ${configPath}`))
+    console.log(chalk.green.bold(`✅ Created/updated .eslintrc.cjs`))
 
     if (existsSync(configPath)) {
-      console.log(chalk.green('✓ File verified to exist'))
-    } else {
-      console.log(chalk.red('✗ File was not created!'))
+      console.log(chalk.green('  ✓ File verified'))
     }
   } catch (error) {
-    console.log(chalk.red.bold(`❌ Failed to create config file: ${error.message}`))
-    console.log(chalk.yellow.bold('\nℹ️  Please create .eslintrc.cjs manually:'))
-    console.log(chalk.gray(configContent))
+    console.log(chalk.red.bold(`❌ Failed to create .eslintrc.cjs: ${error.message}`))
   }
 }
+
+// ============================================
+// CREATE PRETTIER CONFIG
+// ============================================
+const prettierConfigPath = resolve(consumerRoot, '.prettierrc')
+const prettierConfig = {
+  jsxSingleQuote: true,
+  printWidth: 150,
+  quoteProps: 'as-needed',
+  singleQuote: true,
+  tabWidth: 2,
+  trailingComma: 'none',
+  useTabs: false,
+  semi: false
+}
+
+try {
+  writeFileSync(prettierConfigPath, JSON.stringify(prettierConfig, null, 2), 'utf8')
+  console.log(chalk.green.bold('✅ Created/updated .prettierrc'))
+
+  if (existsSync(prettierConfigPath)) {
+    console.log(chalk.green('  ✓ File verified'))
+  }
+} catch (error) {
+  console.log(chalk.red.bold(`❌ Failed to create .prettierrc: ${error.message}`))
+  console.log(chalk.yellow.bold('\nℹ️  Please create .prettierrc manually'))
+}
+
+// ============================================
+// CREATE PRETTIER IGNORE
+// ============================================
+const prettierIgnorePath = resolve(consumerRoot, '.prettierignore')
+const prettierIgnoreContent = `# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+out
+.next
+
+# Coverage
+coverage
+.nyc_output
+
+# Cache
+.cache
+.parcel-cache
+.turbo
+
+# Minified files
+*.min.js
+*.min.css
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+`
+
+try {
+  writeFileSync(prettierIgnorePath, prettierIgnoreContent, 'utf8')
+  console.log(chalk.green.bold('✅ Created/updated .prettierignore'))
+
+  if (existsSync(prettierIgnorePath)) {
+    console.log(chalk.green('  ✓ File verified'))
+  }
+} catch (error) {
+  console.log(chalk.red.bold(`❌ Failed to create .prettierignore: ${error.message}`))
+}
+
+console.log(chalk.blue('\n🎉 Setup complete! Reload your editor for changes to take effect.'))
