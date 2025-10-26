@@ -1,6 +1,6 @@
 {
   "name": "xo-wrapper",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "Shared XO config for JS, TS, and React projects.",
   "type": "module",
   "main": "lib/config.js",
@@ -21,6 +21,7 @@
     "clean": "rm -rf node_modules package-lock.json"
   },
   "dependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "chalk": "^5.6.2",
