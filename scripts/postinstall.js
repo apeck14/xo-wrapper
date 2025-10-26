@@ -2,14 +2,9 @@
 
 import chalk from 'chalk'
 import { existsSync } from 'fs'
-import { dirname, join, resolve } from 'path'
-import { fileURLToPath } from 'url'
+import { resolve } from 'path'
 
 import { detectESLintVersion, detectPackageType, getConsumerRoot, loadTemplate, safeWriteFile } from './utils.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const templatesDir = join(__dirname, 'templates')
 
 // ============================================
 // DETECT CONSUMER ENVIRONMENT
@@ -33,19 +28,12 @@ let eslintConfigCreated = false
 if (eslintVersion >= 9) {
   const configFileName = isESM ? 'eslint.config.js' : 'eslint.config.mjs'
   const configPath = resolve(consumerRoot, configFileName)
-
-  const configContent = `import xoWrapperConfig from 'xo-wrapper'
-
-export default xoWrapperConfig
-`
+  const configContent = loadTemplate('eslint.config.flat.js.txt')
 
   eslintConfigCreated = safeWriteFile(configPath, configContent, configFileName)
 } else {
   const configPath = resolve(consumerRoot, '.eslintrc.cjs')
-  const configContent = `module.exports = {
-  extends: ['xo-wrapper/legacy']
-}
-`
+  const configContent = loadTemplate('eslint.config.legacy.cjs.txt')
 
   eslintConfigCreated = safeWriteFile(configPath, configContent, '.eslintrc.cjs')
 }
@@ -57,7 +45,7 @@ const prettierConfigPath = resolve(consumerRoot, '.prettierrc')
 let prettierConfigCreated = false
 
 if (!existsSync(prettierConfigPath)) {
-  const prettierConfigContent = loadTemplate(templatesDir, 'prettierrc.json')
+  const prettierConfigContent = loadTemplate('prettierrc.json')
   prettierConfigCreated = safeWriteFile(prettierConfigPath, prettierConfigContent, '.prettierrc')
 } else {
   console.error(chalk.blue('ℹ️  .prettierrc already exists, skipping'))
@@ -71,7 +59,7 @@ const prettierIgnorePath = resolve(consumerRoot, '.prettierignore')
 let prettierIgnoreCreated = false
 
 if (!existsSync(prettierIgnorePath)) {
-  const prettierIgnoreContent = loadTemplate(templatesDir, 'prettierignore.txt')
+  const prettierIgnoreContent = loadTemplate('prettierignore.txt')
   prettierIgnoreCreated = safeWriteFile(prettierIgnorePath, prettierIgnoreContent, '.prettierignore')
 } else {
   console.error(chalk.blue('ℹ️  .prettierignore already exists, skipping'))

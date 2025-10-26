@@ -1,6 +1,12 @@
 import chalk from 'chalk'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+
+// Auto-detect templates directory relative to this utils file
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+const TEMPLATES_DIR = join(__dirname, 'templates')
 
 /**
  * Safely writes a file with error handling
@@ -49,15 +55,14 @@ export function safeReadJSON(path, fallback = null) {
 }
 
 /**
- * Loads a template file
- * @param {string} templatesDir - Templates directory path
+ * Loads a template file from the templates directory
  * @param {string} filename - Template filename
  * @returns {string} - Template content
  * @throws {Error} - If template cannot be loaded
  */
-export function loadTemplate(templatesDir, filename) {
+export function loadTemplate(filename) {
   try {
-    return readFileSync(join(templatesDir, filename), 'utf8')
+    return readFileSync(join(TEMPLATES_DIR, filename), 'utf8')
   } catch (error) {
     console.error(chalk.red(`Failed to load template: ${filename}`))
     throw error
