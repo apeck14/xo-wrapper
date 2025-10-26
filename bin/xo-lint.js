@@ -53,7 +53,8 @@ const eslint = new ESLint({
   cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper'),
   cwd: process.cwd(),
   fix,
-  overrideConfigFile: join(packageRoot, 'lib', 'config.js')
+  overrideConfigFile: join(packageRoot, 'lib', 'config.js'),
+  reportUnusedDisableDirectives: 'error'
 })
 ;(async () => {
   try {
