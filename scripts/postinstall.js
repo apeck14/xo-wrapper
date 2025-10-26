@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk'
-import { existsSync } from 'fs'
 import { resolve } from 'path'
 
 import {
@@ -31,7 +30,7 @@ console.error(chalk.blue(`📁 Consumer root: ${consumerRoot}\n`))
 const { isESM } = detectPackageType(consumerRoot)
 const eslintVersion = detectESLintVersion(consumerRoot)
 
-console.error('') // Empty line for readability
+console.error('')
 
 // ============================================
 // CREATE ESLINT CONFIG
@@ -52,37 +51,23 @@ if (eslintVersion >= 9) {
 }
 
 // ============================================
-// CREATE PRETTIER CONFIG
+// CREATE PRETTIER CONFIG (ALWAYS OVERWRITE)
 // ============================================
 const prettierConfigPath = resolve(consumerRoot, '.prettierrc')
-let prettierConfigCreated = false
-
-if (!existsSync(prettierConfigPath)) {
-  const prettierConfigContent = loadTemplate('prettierrc.json')
-  prettierConfigCreated = safeWriteFile(prettierConfigPath, prettierConfigContent, '.prettierrc')
-} else {
-  console.error(chalk.blue('ℹ️  .prettierrc already exists, skipping'))
-  prettierConfigCreated = true
-}
+const prettierConfigContent = loadTemplate('prettierrc.json')
+const prettierConfigCreated = safeWriteFile(prettierConfigPath, prettierConfigContent, '.prettierrc')
 
 // ============================================
-// CREATE PRETTIER IGNORE
+// CREATE PRETTIER IGNORE (ALWAYS OVERWRITE)
 // ============================================
 const prettierIgnorePath = resolve(consumerRoot, '.prettierignore')
-let prettierIgnoreCreated = false
-
-if (!existsSync(prettierIgnorePath)) {
-  const prettierIgnoreContent = loadTemplate('prettierignore.txt')
-  prettierIgnoreCreated = safeWriteFile(prettierIgnorePath, prettierIgnoreContent, '.prettierignore')
-} else {
-  console.error(chalk.blue('ℹ️  .prettierignore already exists, skipping'))
-  prettierIgnoreCreated = true
-}
+const prettierIgnoreContent = loadTemplate('prettierignore.txt')
+const prettierIgnoreCreated = safeWriteFile(prettierIgnorePath, prettierIgnoreContent, '.prettierignore')
 
 // ============================================
 // SUMMARY
 // ============================================
-console.error('') // Empty line
+console.error('')
 
 const allSuccess = eslintConfigCreated && prettierConfigCreated && prettierIgnoreCreated
 
