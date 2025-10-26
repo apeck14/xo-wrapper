@@ -2,7 +2,6 @@
 
 import chalk from 'chalk'
 import { ESLint } from 'eslint'
-import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import process from 'process'
 import { fileURLToPath } from 'url'
@@ -50,10 +49,10 @@ if (debug) {
 }
 
 const eslint = new ESLint({
-  cwd: process.cwd(),
-  fix,
   cache: true,
   cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper'),
+  cwd: process.cwd(),
+  fix,
   overrideConfigFile: join(packageRoot, 'lib', 'config.js')
 })
 ;(async () => {

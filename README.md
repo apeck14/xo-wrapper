@@ -1,6 +1,6 @@
 # xo-wrapper
 
-Zero-config ESLint + Prettier setup with XO defaults for JavaScript, TypeScript, and React projects.
+Zero-config ESLint + Prettier setup with curated plugins for JavaScript, TypeScript, and React projects.
 
 ## Features
 
@@ -91,6 +91,8 @@ xo-lint --debug           # Verbose output
 - **eslint-plugin-simple-import-sort** - Automatic import sorting
 - **eslint-plugin-unicorn** - Additional code quality rules
 - **eslint-plugin-n** - Node.js best practices
+- **eslint-plugin-perfectionist** - Sorting and organization (objects, types, enums)
+- **eslint-plugin-promise** - Promise/async-await best practices
 - **eslint-plugin-jest** - Jest testing conventions
 - **eslint-plugin-vitest** - Vitest testing conventions
 - **@typescript-eslint** - Full TypeScript support
