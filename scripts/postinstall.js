@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.stdout.write('\n')
+
 import chalk from 'chalk'
 import { resolve } from 'path'
 
