@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk'
+import { ESLint } from 'eslint'
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import process from 'process'
 import { fileURLToPath } from 'url'
-import XO from 'xo'
-
-import xoConfig from '../lib/xo.config.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -18,50 +16,118 @@ const args = process.argv.slice(2)
 // Handle --version flag
 if (args.includes('--version') || args.includes('-v')) {
   const pkg = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'))
-  console.log(pkg.version)
+  console.log(`xo-wrapper v${pkg.version}`)
+  process.exit(0)
+}
+
+// Handle --help flag
+if (args.includes('--help') || args.includes('-h')) {
+  console.log(`
+${chalk.bold('xo-wrapper')} - ESLint with XO defaults and curated plugins
+
+${chalk.bold('Usage:')}
+  xo-lint [options] [file/glob patterns...]
+
+${chalk.bold('Options:')}
+  --fix              Automatically fix problems
+  --debug            Show detailed error information
+  -v, --version      Show version number
+  -h, --help         Show this help message
+
+${chalk.bold('Examples:')}
+  xo-lint                       Lint all JS/TS files
+  xo-lint --fix                 Lint and auto-fix
+  xo-lint src/**/*.ts           Lint specific files
+  xo-lint --fix --debug         Fix with verbose output
+`)
   process.exit(0)
 }
 
 const fix = args.includes('--fix')
-const patterns = args.filter((arg) => !arg.startsWith('--'))
+const debug = args.includes('--debug')
+const patterns = args.filter(arg => !arg.startsWith('--'))
 const filesToLint = patterns.length > 0 ? patterns : ['**/*.{js,ts,jsx,tsx}']
 
-const xo = new XO(
-  {
-    cwd: process.cwd(),
-    fix,
-    cache: true,
-    cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper')
-  },
-  xoConfig
-)
+if (debug) {
+  console.log(chalk.blue('🔍 Debug mode enabled\n'))
+  console.log(chalk.blue('Configuration:'))
+  console.log(chalk.blue(`  CWD: ${process.cwd()}`))
+  console.log(chalk.blue(`  Fix mode: ${fix}`))
+  console.log(chalk.blue(`  Patterns: ${filesToLint.join(', ')}`))
+  console.log(chalk.blue(`  Config file: ${join(packageRoot, 'lib', 'config.js')}\n`))
+}
 
-;(async () => {
+const eslint = new ESLint({
+  cwd: process.cwd(),
+  fix,
+  cache: true,
+  cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper'),
+  overrideConfigFile: join(packageRoot, 'lib', 'config.js')
+});
+(async () => {
   try {
-    const { results, errorCount, warningCount } = await xo.lintFiles(filesToLint)
+    if (debug) {
+      console.log(chalk.blue('Starting linting process...\n'))
+    }
 
-    const formatter = await xo.getFormatter('stylish')
-    const formatted = formatter.format(results)
+    const startTime = Date.now()
+    const results = await eslint.lintFiles(filesToLint)
+    const duration = Date.now() - startTime
 
-    if (formatted) console.log(formatted)
+    if (fix) {
+      await ESLint.outputFixes(results)
+      if (debug) {
+        console.log(chalk.blue('\nFixes written to disk'))
+      }
+    }
+
+    const formatter = await eslint.loadFormatter('stylish')
+    const resultText = await formatter.format(results)
+
+    if (resultText) {
+console.log(resultText)
+}
+
+    const errorCount = results.reduce((sum, r) => sum + r.errorCount, 0)
+    const warningCount = results.reduce((sum, r) => sum + r.warningCount, 0)
+    const filesLinted = results.length
+
+    if (debug) {
+      console.log(chalk.blue('\n📊 Statistics:'))
+      console.log(chalk.blue(`  Files linted: ${filesLinted}`))
+      console.log(chalk.blue(`  Duration: ${duration}ms`))
+      console.log(chalk.blue(`  Errors: ${errorCount}`))
+      console.log(chalk.blue(`  Warnings: ${warningCount}\n`))
+    }
 
     if (errorCount === 0 && warningCount === 0) {
       console.log(chalk.green.bold('✅ No lint errors or warnings found!'))
     } else {
-      if (errorCount > 0) console.log(chalk.red.bold(`❌ Total Errors: ${errorCount}`))
-      if (warningCount > 0) console.log(chalk.yellow.bold(`⚠️ Total Warnings: ${warningCount}`))
+      if (errorCount > 0) {
+console.log(chalk.red.bold(`❌ Total Errors: ${errorCount}`))
+}
+
+      if (warningCount > 0) {
+console.log(chalk.yellow.bold(`⚠️  Total Warnings: ${warningCount}`))
+}
     }
 
     process.exit(errorCount > 0 ? 1 : 0)
   } catch (err) {
-    console.error(chalk.red.bold('❌ XO Linting failed:'))
+    console.error(chalk.red.bold('❌ Linting failed:'))
+    console.error(chalk.red(`\n${err.message}`))
 
-    if (err.message.includes('Cannot find module') || err.message.includes('Failed to load plugin')) {
-      console.error(chalk.yellow('\nHint: This might be a plugin resolution issue.'))
-      console.error(chalk.yellow('Try removing node_modules and package-lock.json, then reinstalling.'))
+    if (debug || process.env.DEBUG) {
+      console.error(chalk.red('\n📋 Stack trace:'))
+      console.error(chalk.gray(err.stack))
+
+      if (err.cause) {
+        console.error(chalk.red('\n🔍 Cause:'))
+        console.error(chalk.gray(err.cause))
+      }
+    } else {
+      console.error(chalk.yellow('\n💡 Tip: Run with --debug flag for more details'))
     }
-
-    console.error('\n' + err.message)
 
     process.exit(1)
   }

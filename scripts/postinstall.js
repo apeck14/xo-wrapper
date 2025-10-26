@@ -1,13 +1,55 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk'
-import { existsSync, readFileSync, writeFileSync } from 'fs'
-import { join, resolve } from 'path'
-import { dirname } from 'path'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { dirname, join, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
+/**
+ * Safely writes a file with error handling
+ */
+function safeWriteFile(path, content, description) {
+  try {
+    // Ensure directory exists
+    const dir = dirname(path)
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true })
+    }
+
+    writeFileSync(path, content, 'utf8')
+    console.error(chalk.green.bold(`✅ Created/updated ${description}`))
+
+    if (existsSync(path)) {
+      console.error(chalk.green(`  ✓ File verified at: ${path}`))
+      return true
+    }
+
+    console.error(chalk.red('  ✗ File verification failed'))
+    return false
+  } catch (error) {
+    console.error(chalk.red.bold(`❌ Failed to create ${description}:`))
+    console.error(chalk.red(`  ${error.message}`))
+    return false
+  }
+}
+
+/**
+ * Safely reads and parses JSON file
+ */
+function safeReadJSON(path, fallback = null) {
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return fallback
+  }
+}
+
+// ============================================
+// DETECT CONSUMER ENVIRONMENT
+// ============================================
 
 // Get consumer root
 let consumerRoot
@@ -20,33 +62,40 @@ if (process.env.INIT_CWD) {
   consumerRoot = process.cwd()
 }
 
-console.log(chalk.blue(`Consumer root: ${consumerRoot}`))
+console.error(chalk.blue.bold('\n🔧 xo-wrapper setup'))
+console.error(chalk.blue(`📁 Consumer root: ${consumerRoot}\n`))
 
 // Detect if repo is ESM or CommonJS
 let isESM = false
-try {
-  const pkgPath = join(consumerRoot, 'package.json')
-  const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+const pkgPath = join(consumerRoot, 'package.json')
+const pkg = safeReadJSON(pkgPath)
+
+if (pkg) {
   isESM = pkg.type === 'module'
-  console.log(chalk.blue(`Package type: ${isESM ? 'ESM' : 'CommonJS'}`))
-} catch {
-  console.log(chalk.yellow('Could not detect package type, assuming CommonJS'))
+  console.error(chalk.blue(`📦 Package type: ${isESM ? 'ESM' : 'CommonJS'}`))
+} else {
+  console.error(chalk.yellow('⚠️  Could not detect package type, assuming CommonJS'))
 }
 
 // Detect ESLint version
 let eslintVersion = 9
-try {
-  const eslintPkgPath = join(consumerRoot, 'node_modules', 'eslint', 'package.json')
-  const eslintPkg = JSON.parse(readFileSync(eslintPkgPath, 'utf8'))
+const eslintPkgPath = join(consumerRoot, 'node_modules', 'eslint', 'package.json')
+const eslintPkg = safeReadJSON(eslintPkgPath)
+
+if (eslintPkg) {
   eslintVersion = parseInt(eslintPkg.version.split('.')[0], 10)
-  console.log(chalk.blue(`ESLint version: ${eslintVersion}`))
-} catch {
-  console.log(chalk.yellow('Could not detect ESLint version, defaulting to 9'))
+  console.error(chalk.blue(`🔍 ESLint version: ${eslintVersion}`))
+} else {
+  console.error(chalk.yellow('⚠️  Could not detect ESLint version, defaulting to 9'))
 }
+
+console.error('') // Empty line for readability
 
 // ============================================
 // CREATE ESLINT CONFIG
 // ============================================
+let eslintConfigCreated = false
+
 if (eslintVersion >= 9) {
   const configFileName = isESM ? 'eslint.config.js' : 'eslint.config.mjs'
   const configPath = resolve(consumerRoot, configFileName)
@@ -56,16 +105,7 @@ if (eslintVersion >= 9) {
 export default xoWrapperConfig
 `
 
-  try {
-    writeFileSync(configPath, configContent, 'utf8')
-    console.log(chalk.green.bold(`✅ Created/updated ${configFileName}`))
-
-    if (existsSync(configPath)) {
-      console.log(chalk.green('  ✓ File verified'))
-    }
-  } catch (error) {
-    console.log(chalk.red.bold(`❌ Failed to create ${configFileName}: ${error.message}`))
-  }
+  eslintConfigCreated = safeWriteFile(configPath, configContent, configFileName)
 } else {
   const configPath = resolve(consumerRoot, '.eslintrc.cjs')
   const configContent = `module.exports = {
@@ -73,16 +113,7 @@ export default xoWrapperConfig
 }
 `
 
-  try {
-    writeFileSync(configPath, configContent, 'utf8')
-    console.log(chalk.green.bold(`✅ Created/updated .eslintrc.cjs`))
-
-    if (existsSync(configPath)) {
-      console.log(chalk.green('  ✓ File verified'))
-    }
-  } catch (error) {
-    console.log(chalk.red.bold(`❌ Failed to create .eslintrc.cjs: ${error.message}`))
-  }
+  eslintConfigCreated = safeWriteFile(configPath, configContent, '.eslintrc.cjs')
 }
 
 // ============================================
@@ -91,7 +122,7 @@ export default xoWrapperConfig
 const prettierConfigPath = resolve(consumerRoot, '.prettierrc')
 const prettierConfig = {
   jsxSingleQuote: true,
-  printWidth: 150,
+  printWidth: 120,
   quoteProps: 'as-needed',
   singleQuote: true,
   tabWidth: 2,
@@ -100,17 +131,13 @@ const prettierConfig = {
   semi: false
 }
 
-// Only create if it doesn't exist
+let prettierConfigCreated = false
+
 if (!existsSync(prettierConfigPath)) {
-  try {
-    writeFileSync(prettierConfigPath, JSON.stringify(prettierConfig, null, 2), 'utf8')
-    console.log(chalk.green.bold('✅ Created .prettierrc'))
-    console.log(chalk.green('  ✓ File verified'))
-  } catch (error) {
-    console.log(chalk.red.bold(`❌ Failed to create .prettierrc: ${error.message}`))
-  }
+  prettierConfigCreated = safeWriteFile(prettierConfigPath, JSON.stringify(prettierConfig, null, 2), '.prettierrc')
 } else {
-  console.log(chalk.blue('ℹ️  .prettierrc already exists, skipping'))
+  console.error(chalk.blue('ℹ️  .prettierrc already exists, skipping'))
+  prettierConfigCreated = true // Consider it "created" since it exists
 }
 
 // ============================================
@@ -155,17 +182,25 @@ yarn-error.log*
 Thumbs.db
 `
 
-// Only create if it doesn't exist
+let prettierIgnoreCreated = false
+
 if (!existsSync(prettierIgnorePath)) {
-  try {
-    writeFileSync(prettierIgnorePath, prettierIgnoreContent, 'utf8')
-    console.log(chalk.green.bold('✅ Created .prettierignore'))
-    console.log(chalk.green('  ✓ File verified'))
-  } catch (error) {
-    console.log(chalk.red.bold(`❌ Failed to create .prettierignore: ${error.message}`))
-  }
+  prettierIgnoreCreated = safeWriteFile(prettierIgnorePath, prettierIgnoreContent, '.prettierignore')
 } else {
-  console.log(chalk.blue('ℹ️  .prettierignore already exists, skipping'))
+  console.error(chalk.blue('ℹ️  .prettierignore already exists, skipping'))
+  prettierIgnoreCreated = true // Consider it "created" since it exists
 }
 
-console.log(chalk.blue('\n🎉 Setup complete! Reload your editor for changes to take effect.'))
+// ============================================
+// SUMMARY
+// ============================================
+console.error('') // Empty line
+
+const allSuccess = eslintConfigCreated && prettierConfigCreated && prettierIgnoreCreated
+
+if (allSuccess) {
+  console.error(chalk.green.bold('🎉 Setup complete! Reload your editor for changes to take effect.\n'))
+} else {
+  console.error(chalk.yellow.bold('⚠️  Setup completed with some warnings. Check the output above.\n'))
+  process.exit(0) // Don't fail installation, just warn
+}

@@ -12,6 +12,7 @@ Zero-config ESLint/XO linting for JavaScript, TypeScript, and React projects. Al
 - **All plugins bundled** - No peer dependency management
 
 ## Installation
+
 ```bash
 npm i -D xo-wrapper
 ```
@@ -21,6 +22,7 @@ An `eslint.config.js` is automatically created for VSCode integration.
 ## Usage
 
 Add to `package.json`:
+
 ```json
 {
   "scripts": {
@@ -31,6 +33,7 @@ Add to `package.json`:
 ```
 
 The following files will be automatically created:
+
 - `eslint.config.js` or `eslint.config.mjs` - ESLint configuration
 - `.prettierrc` - Prettier formatting rules
 - `.prettierignore` - Files to exclude from formatting
@@ -38,12 +41,14 @@ The following files will be automatically created:
 **Note:** You can customize these files after installation if needed.
 
 Run linting:
+
 ```bash
 npm run lint        # Check for issues
 npm run lint:fix    # Auto-fix issues
 ```
 
 ## CLI Options
+
 ```bash
 xo-lint                # Lint all JS/TS/JSX/TSX files
 xo-lint --fix          # Auto-fix issues
@@ -63,6 +68,7 @@ xo-lint --version      # Show version
    - [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
    - [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 2. Add to `.vscode/settings.json`:
+
 ```json
 {
   "eslint.enable": true,
@@ -80,6 +86,7 @@ xo-lint --version      # Show version
 ## Custom Rules
 
 Edit the auto-generated `eslint.config.js`:
+
 ```javascript
 import xoWrapperConfig from 'xo-wrapper'
 
@@ -87,7 +94,7 @@ export default {
   ...xoWrapperConfig,
   rules: {
     ...xoWrapperConfig.rules,
-    'no-console': 'warn'  // Your overrides
+    'no-console': 'warn' // Your overrides
   }
 }
 ```
@@ -95,10 +102,12 @@ export default {
 ## Requirements
 
 **Runtime:**
+
 - Node.js >= 18
 - ESLint >= 8.57.0 (installed automatically)
-- Prettier >= 3.0.0 (installed automatically)
+- Prettier >= 3.3.3 (installed automatically)
 
 **Editor (optional):**
+
 - VSCode ESLint extension for linting on save
 - VSCode Prettier extension for formatting on save
