@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 process.stdout.write('\n')
 
 import chalk from 'chalk'
-import { resolve } from 'path'
+import { existsSync } from 'fs'
+import { join, resolve } from 'path'
 
 import {
   detectESLintVersion,
@@ -37,19 +39,20 @@ console.error('')
 // ============================================
 // CREATE ESLINT CONFIG
 // ============================================
+const hasExplicitEslint8 = eslintVersion === 8 || eslintVersion < 9
 let eslintConfigCreated = false
 
-if (eslintVersion >= 9) {
+if (hasExplicitEslint8 && existsSync(join(consumerRoot, 'node_modules', 'eslint', 'package.json'))) {
+  // ESLint 8 is explicitly installed by consumer repo
+  const configPath = resolve(consumerRoot, '.eslintrc.cjs')
+  const configContent = loadTemplate('eslint.config.legacy.cjs.txt')
+  eslintConfigCreated = safeWriteFile(configPath, configContent, '.eslintrc.cjs')
+} else {
+  // Default to flat config (ESLint 9+)
   const configFileName = isESM ? 'eslint.config.js' : 'eslint.config.mjs'
   const configPath = resolve(consumerRoot, configFileName)
   const configContent = loadTemplate('eslint.config.flat.js.txt')
-
   eslintConfigCreated = safeWriteFile(configPath, configContent, configFileName)
-} else {
-  const configPath = resolve(consumerRoot, '.eslintrc.cjs')
-  const configContent = loadTemplate('eslint.config.legacy.cjs.txt')
-
-  eslintConfigCreated = safeWriteFile(configPath, configContent, '.eslintrc.cjs')
 }
 
 // ============================================

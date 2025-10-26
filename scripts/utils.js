@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import chalk from 'chalk'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, join } from 'path'
