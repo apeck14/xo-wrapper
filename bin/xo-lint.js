@@ -13,13 +13,6 @@ const packageRoot = join(__dirname, '..')
 
 const args = process.argv.slice(2)
 
-// Handle --version flag
-if (args.includes('--version') || args.includes('-v')) {
-  const pkg = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'))
-  console.log(`xo-wrapper v${pkg.version}`)
-  process.exit(0)
-}
-
 // Handle --help flag
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`
@@ -31,7 +24,6 @@ ${chalk.bold('Usage:')}
 ${chalk.bold('Options:')}
   --fix              Automatically fix problems
   --debug            Show detailed error information
-  -v, --version      Show version number
   -h, --help         Show this help message
 
 ${chalk.bold('Examples:')}
@@ -45,7 +37,7 @@ ${chalk.bold('Examples:')}
 
 const fix = args.includes('--fix')
 const debug = args.includes('--debug')
-const patterns = args.filter(arg => !arg.startsWith('--'))
+const patterns = args.filter((arg) => !arg.startsWith('--'))
 const filesToLint = patterns.length > 0 ? patterns : ['**/*.{js,ts,jsx,tsx}']
 
 if (debug) {
@@ -63,8 +55,8 @@ const eslint = new ESLint({
   cache: true,
   cacheLocation: join(process.cwd(), 'node_modules', '.cache', 'xo-wrapper'),
   overrideConfigFile: join(packageRoot, 'lib', 'config.js')
-});
-(async () => {
+})
+;(async () => {
   try {
     if (debug) {
       console.log(chalk.blue('Starting linting process...\n'))
@@ -85,8 +77,8 @@ const eslint = new ESLint({
     const resultText = await formatter.format(results)
 
     if (resultText) {
-console.log(resultText)
-}
+      console.log(resultText)
+    }
 
     const errorCount = results.reduce((sum, r) => sum + r.errorCount, 0)
     const warningCount = results.reduce((sum, r) => sum + r.warningCount, 0)
@@ -104,12 +96,12 @@ console.log(resultText)
       console.log(chalk.green.bold('✅ No lint errors or warnings found!'))
     } else {
       if (errorCount > 0) {
-console.log(chalk.red.bold(`❌ Total Errors: ${errorCount}`))
-}
+        console.log(chalk.red.bold(`❌ Total Errors: ${errorCount}`))
+      }
 
       if (warningCount > 0) {
-console.log(chalk.yellow.bold(`⚠️  Total Warnings: ${warningCount}`))
-}
+        console.log(chalk.yellow.bold(`⚠️  Total Warnings: ${warningCount}`))
+      }
     }
 
     process.exit(errorCount > 0 ? 1 : 0)

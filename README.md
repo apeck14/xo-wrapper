@@ -160,7 +160,6 @@ xo-lint [options] [file/glob patterns...]
 Options:
   --fix              Automatically fix problems
   --debug            Show detailed error information
-  -v, --version      Show version number
   -h, --help         Show help message
 
 Examples:
