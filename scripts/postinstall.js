@@ -100,16 +100,17 @@ const prettierConfig = {
   semi: false
 }
 
-try {
-  writeFileSync(prettierConfigPath, JSON.stringify(prettierConfig, null, 2), 'utf8')
-  console.log(chalk.green.bold('✅ Created/updated .prettierrc'))
-
-  if (existsSync(prettierConfigPath)) {
+// Only create if it doesn't exist
+if (!existsSync(prettierConfigPath)) {
+  try {
+    writeFileSync(prettierConfigPath, JSON.stringify(prettierConfig, null, 2), 'utf8')
+    console.log(chalk.green.bold('✅ Created .prettierrc'))
     console.log(chalk.green('  ✓ File verified'))
+  } catch (error) {
+    console.log(chalk.red.bold(`❌ Failed to create .prettierrc: ${error.message}`))
   }
-} catch (error) {
-  console.log(chalk.red.bold(`❌ Failed to create .prettierrc: ${error.message}`))
-  console.log(chalk.yellow.bold('\nℹ️  Please create .prettierrc manually'))
+} else {
+  console.log(chalk.blue('ℹ️  .prettierrc already exists, skipping'))
 }
 
 // ============================================
@@ -154,15 +155,17 @@ yarn-error.log*
 Thumbs.db
 `
 
-try {
-  writeFileSync(prettierIgnorePath, prettierIgnoreContent, 'utf8')
-  console.log(chalk.green.bold('✅ Created/updated .prettierignore'))
-
-  if (existsSync(prettierIgnorePath)) {
+// Only create if it doesn't exist
+if (!existsSync(prettierIgnorePath)) {
+  try {
+    writeFileSync(prettierIgnorePath, prettierIgnoreContent, 'utf8')
+    console.log(chalk.green.bold('✅ Created .prettierignore'))
     console.log(chalk.green('  ✓ File verified'))
+  } catch (error) {
+    console.log(chalk.red.bold(`❌ Failed to create .prettierignore: ${error.message}`))
   }
-} catch (error) {
-  console.log(chalk.red.bold(`❌ Failed to create .prettierignore: ${error.message}`))
+} else {
+  console.log(chalk.blue('ℹ️  .prettierignore already exists, skipping'))
 }
 
 console.log(chalk.blue('\n🎉 Setup complete! Reload your editor for changes to take effect.'))
