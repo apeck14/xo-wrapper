@@ -146,7 +146,7 @@ export default [
 ## Requirements
 
 - **Node.js** >= 20.12.0
-- **ESLint** >= 8.57.0 (installed automatically)
+- **ESLint** >= 8 (9 installed automatically)
 - **Prettier** >= 3.3.3 (installed automatically)
 
 **Editor (optional):**
