@@ -101,10 +101,11 @@ export function detectESLintVersion(consumerRoot) {
     const version = parseInt(eslintPkg.version.split('.')[0], 10)
     console.error(chalk.blue(`🔍 ESLint version: ${version}`))
     return version
+  } else {
+    // If ESLint isn't installed, assume bundled version (9+)
+    console.error(chalk.blue('🔍 ESLint not found locally, using bundled version (9+)'))
+    return 9
   }
-
-  console.error(chalk.yellow('⚠️  Could not detect ESLint version, defaulting to 9'))
-  return 9
 }
 
 /**
