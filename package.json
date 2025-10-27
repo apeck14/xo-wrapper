@@ -1,6 +1,6 @@
 {
   "name": "xo-wrapper",
-  "version": "3.6.4",
+  "version": "3.6.5",
   "description": "Shared XO config for JS, TS, and React projects.",
   "type": "module",
   "main": "lib/config.js",
